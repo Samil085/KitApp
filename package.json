@@ -4,8 +4,9 @@
   "description": "Telegram Bot ve Web Kitap Kütüphanesi",
   "main": "index.js",
   "scripts": {
-    "start": "node index.js",
-    "start-web": "node web.js"
+    "start": "node server.js",
+    "start-web": "node web.js",
+    "start-bot": "node index.js"
   },
   "keywords": [],
   "author": "",

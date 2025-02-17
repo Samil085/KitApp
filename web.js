@@ -7,7 +7,7 @@ const { Telegraf } = require('telegraf');
 const bcrypt = require('bcrypt');
 
 const app = express();
-const port = 3000;
+const port = process.env.PORT || 3000;
 
 // View engine ayarları
 app.set('view engine', 'ejs');
@@ -1100,6 +1100,6 @@ app.get('/admin/users', requireAuth, (req, res) => {
     }
 });
 
-app.listen(port, 'localhost', () => {
-    console.log(`Web sunucusu http://localhost:${port} adresinde çalışıyor`);
+app.listen(port, '0.0.0.0', () => {
+    console.log(`Web sunucusu http://0.0.0.0:${port} adresinde çalışıyor`);
 }); 

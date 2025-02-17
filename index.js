@@ -465,3 +465,9 @@ global.sendToTelegram = async (formData) => {
         console.error('Telegram mesaj gönderme hatası:', error);
     }
 };
+
+// Bot fonksiyonlarını dışa aktar
+module.exports = (bot) => {
+    // Mevcut bot kodları buraya gelecek
+    // ... existing code ...
+};
