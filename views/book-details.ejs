@@ -1,0 +1,861 @@
+<!DOCTYPE html>
+<html lang="<%= currentLang %>">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title><%= book.name %> - KitApp</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root {
+            --bg-color: #f8f9fa;
+            --text-color: #333;
+            --card-bg: white;
+            --navbar-bg: white;
+            --border-color: #dee2e6;
+            --hover-color: #f8f9fa;
+            --details-bg: #f8f9fa;
+            --meta-color: #666;
+            --category-bg: #e9ecef;
+            --category-text: #495057;
+            --detail-text: #333;
+            --input-bg: white;
+            --input-text: #333;
+        }
+
+        [data-theme="dark"] {
+            --bg-color: #121212;
+            --text-color: #ffffff;
+            --card-bg: #1e1e1e;
+            --navbar-bg: #1e1e1e;
+            --border-color: #333333;
+            --hover-color: #2d2d2d;
+            --details-bg: #2d2d2d;
+            --meta-color: #aaaaaa;
+            --category-bg: #333333;
+            --category-text: #ffffff;
+            --detail-text: #ffffff;
+            --input-bg: #2d2d2d;
+            --input-text: #ffffff;
+            --shadow-color: rgba(0, 0, 0, 0.3);
+            --is-dark: 1;
+        }
+
+        [data-theme="light"] {
+            --is-dark: 0;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            transition: all 0.3s ease;
+        }
+        .navbar {
+            background-color: var(--navbar-bg) !important;
+            box-shadow: 0 2px 4px rgba(0,0,0,.1);
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            padding: 10px 0;
+        }
+        .navbar-brand {
+            color: var(--text-color) !important;
+            font-weight: 500;
+        }
+        .navbar-controls {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+        .control-button {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            color: var(--text-color);
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .control-button:hover {
+            background: var(--hover-color);
+        }
+        .lang-menu {
+            position: absolute;
+            top: 45px;
+            right: 0;
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            padding: 5px;
+            display: none;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            z-index: 1000;
+        }
+        .lang-menu.show {
+            display: block;
+        }
+        .lang-option {
+            padding: 8px 20px;
+            color: var(--text-color);
+            text-decoration: none;
+            display: block;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+        }
+        .lang-option:hover {
+            background: var(--hover-color);
+        }
+        .lang-option.active {
+            background: var(--text-color);
+            color: var(--bg-color);
+        }
+        .lang-dropdown {
+            position: relative;
+        }
+        .book-container {
+            background: var(--card-bg);
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            padding: 30px;
+            margin-top: 80px;
+        }
+        .book-cover {
+            width: 100%;
+            max-width: 300px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        .book-info {
+            margin-left: 30px;
+        }
+        .book-title {
+            font-size: 2rem;
+            font-weight: 600;
+            margin-bottom: 15px;
+        }
+        .book-meta {
+            color: var(--meta-color);
+            margin-bottom: 20px;
+        }
+        .book-description {
+            font-size: 1.1rem;
+            line-height: 1.6;
+            margin-bottom: 30px;
+            color: var(--text-color);
+        }
+        .action-buttons {
+            display: flex;
+            gap: 25px;
+            margin-bottom: 20px;
+            flex-direction: row;
+        }
+        .action-button {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            border: none;
+            background: none;
+            color: var(--text-color);
+            cursor: pointer;
+            padding: 0;
+            opacity: 0.8;
+        }
+        .action-button:hover {
+            transform: scale(1.1);
+            opacity: 1;
+        }
+        .action-button i {
+            font-size: 1.8rem;
+        }
+        .download-btn:hover {
+            color: #4CAF50;
+        }
+        .share-btn:hover {
+            color: #2196F3;
+        }
+        .read-btn:hover {
+            color: #FF9800;
+        }
+        .details-section {
+            background: var(--details-bg);
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 30px;
+        }
+        .details-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+        }
+        .detail-item {
+            display: flex;
+            flex-direction: column;
+        }
+        .detail-label {
+            font-size: 0.9rem;
+            color: var(--meta-color);
+            margin-bottom: 5px;
+        }
+        .detail-value {
+            font-size: 1.1rem;
+            font-weight: 500;
+            color: var(--detail-text);
+        }
+        .category-badge {
+            background: var(--category-bg);
+            color: var(--category-text);
+            padding: 5px 12px;
+            border-radius: 15px;
+            font-size: 0.9rem;
+            margin-right: 8px;
+            margin-bottom: 8px;
+            display: inline-block;
+        }
+        .language-selector {
+            position: fixed;
+            top: 20px;
+            right: 80px;
+            z-index: 1000;
+        }
+        .language-btn {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            padding: 8px 15px;
+            border-radius: 20px;
+            color: var(--text-color);
+            text-decoration: none;
+            margin-left: 10px;
+            transition: all 0.3s ease;
+        }
+        .language-btn:hover {
+            background: var(--hover-color);
+            color: var(--text-color);
+        }
+        .language-btn.active {
+            background: var(--text-color);
+            color: var(--bg-color);
+            border-color: var(--text-color);
+        }
+        .theme-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            color: var(--text-color);
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+        .theme-toggle:hover {
+            background: var(--hover-color);
+        }
+        @media (max-width: 768px) {
+            .book-container {
+                padding: 20px;
+            }
+            .book-info {
+                margin-left: 0;
+                margin-top: 20px;
+            }
+            .book-cover {
+                max-width: 200px;
+                margin: 0 auto;
+                display: block;
+            }
+            .action-buttons {
+                gap: 30px;
+                justify-content: center;
+            }
+            .action-button i {
+                font-size: 1.6rem;
+            }
+        }
+        .form-control {
+            background-color: var(--input-bg);
+            color: var(--input-text);
+            border-color: var(--border-color);
+        }
+        .form-control:focus {
+            background-color: var(--input-bg);
+            color: var(--input-text);
+            border-color: var(--text-color);
+            box-shadow: none;
+        }
+        .audio-player-container {
+            background: #2d2d2d;
+            border-radius: 16px;
+            padding: 24px;
+            margin: 24px 0;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+        }
+        .audio-controls {
+            display: flex;
+            align-items: center;
+            gap: 24px;
+            flex-wrap: wrap;
+        }
+        .play-button {
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            background: transparent;
+            border: 2px solid #ffffff;
+            color: #ffffff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            flex-shrink: 0;
+        }
+        .play-button:hover {
+            transform: scale(1.1);
+            background: rgba(255, 255, 255, 0.1);
+        }
+        .play-button i {
+            font-size: 24px;
+            margin-left: 4px;
+        }
+        .audio-progress {
+            flex: 1;
+            min-width: 250px;
+            height: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+            cursor: pointer;
+            position: relative;
+            transition: all 0.2s ease;
+        }
+        .audio-progress:hover {
+            height: 10px;
+        }
+        .progress-bar {
+            height: 100%;
+            background: #ffffff;
+            border-radius: 4px;
+            width: 0;
+            transition: width 0.1s linear;
+        }
+        .time-info {
+            color: #ffffff;
+            font-size: 16px;
+            opacity: 0.9;
+            min-width: 120px;
+            text-align: center;
+            flex-shrink: 0;
+            font-weight: 500;
+        }
+        .volume-control {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-left: auto;
+            flex-shrink: 0;
+        }
+        .volume-button {
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            background: transparent;
+            border: none;
+            color: #ffffff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            opacity: 0.9;
+            transition: all 0.3s ease;
+        }
+        .volume-button:hover {
+            opacity: 1;
+            background: rgba(255, 255, 255, 0.1);
+        }
+        .volume-slider {
+            width: 120px;
+            height: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+            cursor: pointer;
+            position: relative;
+            transition: all 0.2s ease;
+        }
+        .volume-slider:hover {
+            height: 10px;
+        }
+        .volume-level {
+            height: 100%;
+            background: #ffffff;
+            border-radius: 4px;
+            width: 100%;
+            transition: width 0.1s linear;
+        }
+
+        @media (max-width: 768px) {
+            .audio-player-container {
+                padding: 16px;
+                margin: 16px 0;
+            }
+            
+            .audio-controls {
+                gap: 16px;
+            }
+            
+            .play-button {
+                width: 48px;
+                height: 48px;
+            }
+            
+            .play-button i {
+                font-size: 20px;
+            }
+            
+            .audio-progress {
+                min-width: 0;
+                flex: 1;
+            }
+            
+            .time-info {
+                min-width: auto;
+                font-size: 14px;
+            }
+
+            .volume-control {
+                display: none;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .audio-player-container {
+                padding: 12px;
+                margin: 12px 0;
+            }
+            
+            .audio-controls {
+                gap: 12px;
+                align-items: center;
+            }
+            
+            .play-button {
+                width: 42px;
+                height: 42px;
+            }
+            
+            .play-button i {
+                font-size: 18px;
+                margin-left: 3px;
+            }
+            
+            .audio-progress {
+                height: 6px;
+            }
+            
+            .audio-progress:hover {
+                height: 6px;
+            }
+            
+            .time-info {
+                font-size: 13px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg">
+        <div class="container">
+            <a class="navbar-brand" href="/">
+                <i class="fas fa-arrow-left me-2"></i>
+                KitApp
+            </a>
+            <div class="navbar-controls">
+                <button class="control-button" onclick="toggleTheme()">
+                    <i class="fas fa-moon"></i>
+                </button>
+                <div class="lang-dropdown">
+                    <button class="control-button" onclick="toggleLangMenu()">
+                        <i class="fas fa-globe"></i>
+                    </button>
+                    <div class="lang-menu">
+                        <a href="/change-language/az" class="lang-option <%= currentLang === 'az' ? 'active' : '' %>">AZ</a>
+                        <a href="/change-language/tr" class="lang-option <%= currentLang === 'tr' ? 'active' : '' %>">TR</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="book-container">
+            <div class="row">
+                <div class="col-md-4">
+                    <% if (book.cover) { %>
+                        <img src="/covers/<%= book.cover %>" alt="<%= book.name %>" class="book-cover">
+                    <% } else { %>
+                        <div class="book-cover d-flex align-items-center justify-content-center bg-light">
+                            <i class="fas fa-book fa-3x text-secondary"></i>
+                        </div>
+                    <% } %>
+                </div>
+                <div class="col-md-8">
+                    <div class="book-info">
+                        <h1 class="book-title"><%= book.name %></h1>
+                        
+                        <div class="book-meta">
+                            <% if (book.categories && (Array.isArray(book.categories) ? book.categories.length > 0 : book.categories)) { %>
+                                <div class="mb-3">
+                                    <% if (Array.isArray(book.categories)) { %>
+                                        <% book.categories.forEach(categoryId => { %>
+                                            <% const category = categories.find(c => c.id === categoryId) %>
+                                            <% if (category) { %>
+                                                <span class="category-badge">
+                                                    <%= category[`name_${currentLang}`] %>
+                                                </span>
+                                            <% } %>
+                                        <% }); %>
+                                    <% } else { %>
+                                        <% const category = categories.find(c => c.id === book.categories) %>
+                                        <% if (category) { %>
+                                            <span class="category-badge">
+                                                <%= category[`name_${currentLang}`] %>
+                                            </span>
+                                        <% } %>
+                                    <% } %>
+                                </div>
+                            <% } %>
+                        </div>
+
+                        <% if (book.hasAudio) { %>
+                        <div class="audio-player-container">
+                            <div class="audio-controls">
+                                <button class="play-button">
+                                    <i class="fas fa-play"></i>
+                                </button>
+                                <div class="audio-progress">
+                                    <div class="progress-bar"></div>
+                                </div>
+                                <div class="time-info">
+                                    <span class="current-time">0:00</span> / 
+                                    <span class="total-time">0:00</span>
+                                </div>
+                                <div class="volume-control">
+                                    <button class="volume-button">
+                                        <i class="fas fa-volume-up"></i>
+                                    </button>
+                                    <div class="volume-slider">
+                                        <div class="volume-level"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            <audio id="audioPlayer" src="/audio/<%= book.name %>.mp3"></audio>
+                        </div>
+                        <% } %>
+
+                        <% if (book.description) { %>
+                            <p class="book-description"><%= book.description %></p>
+                        <% } %>
+
+                        <div class="action-buttons">
+                            <button class="action-button download-btn" onclick="downloadBook()" data-tooltip="<%= translations.download %>">
+                                <i class="fas fa-download"></i>
+                            </button>
+                            <button class="action-button share-btn" onclick="shareBook()" data-tooltip="<%= translations.share %>">
+                                <i class="fas fa-share-alt"></i>
+                            </button>
+                            <a href="/read/<%= book.name %>.pdf" class="action-button read-btn" data-tooltip="<%= translations.details %>">
+                                <i class="fas fa-book-reader"></i>
+                            </a>
+                        </div>
+
+                        <div class="details-section">
+                            <div class="details-grid">
+                                <% if (book.author) { %>
+                                    <div class="detail-item">
+                                        <span class="detail-label"><%= translations.author %></span>
+                                        <span class="detail-value"><%= book.author %></span>
+                                    </div>
+                                <% } %>
+
+                                <% if (book.publisher) { %>
+                                    <div class="detail-item">
+                                        <span class="detail-label"><%= translations.publisher %></span>
+                                        <span class="detail-value"><%= book.publisher %></span>
+                                    </div>
+                                <% } %>
+
+                                <% if (book.pageCount) { %>
+                                    <div class="detail-item">
+                                        <span class="detail-label"><%= translations.page_count %></span>
+                                        <span class="detail-value"><%= book.pageCount %></span>
+                                    </div>
+                                <% } %>
+
+                                <% if (book.publishYear) { %>
+                                    <div class="detail-item">
+                                        <span class="detail-label"><%= translations.publish_year %></span>
+                                        <span class="detail-value"><%= book.publishYear %></span>
+                                    </div>
+                                <% } %>
+
+                                <% if (book.isbn) { %>
+                                    <div class="detail-item">
+                                        <span class="detail-label"><%= translations.isbn %></span>
+                                        <span class="detail-value"><%= book.isbn %></span>
+                                    </div>
+                                <% } %>
+
+                                <% if (book.language) { %>
+                                    <div class="detail-item">
+                                        <span class="detail-label"><%= translations.language %></span>
+                                        <span class="detail-value"><%= book.language.toUpperCase() %></span>
+                                    </div>
+                                <% } %>
+
+                                <div class="detail-item">
+                                    <span class="detail-label"><%= translations.download_count %></span>
+                                    <span class="detail-value" id="downloadCount"><%= book.downloadCount || 0 %></span>
+                                </div>
+
+                                <div class="detail-item">
+                                    <span class="detail-label"><%= translations.share_count %></span>
+                                    <span class="detail-value" id="shareCount"><%= book.shareCount || 0 %></span>
+                                </div>
+
+                                <% if (book.addedBy) { %>
+                                    <div class="detail-item">
+                                        <span class="detail-label"><%= translations.added_by %></span>
+                                        <span class="detail-value"><%= book.addedBy %></span>
+                                    </div>
+                                <% } %>
+
+                                <% if (book.addedAt) { %>
+                                    <div class="detail-item">
+                                        <span class="detail-label"><%= translations.added_at %></span>
+                                        <span class="detail-value"><%= new Date(book.addedAt).toLocaleDateString() %></span>
+                                    </div>
+                                <% } %>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function downloadBook() {
+            const link = document.createElement('a');
+            link.href = '/books/<%= book.name %>.pdf';
+            link.download = '<%= book.name %>.pdf';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+
+            // İndirme sayacını güncelle
+            fetch('/api/download/<%= book.name %>', { method: 'POST' })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        document.getElementById('downloadCount').textContent = data.count;
+                    }
+                });
+        }
+
+        function shareBook() {
+            // Paylaşım URL'sini oluştur
+            const shareUrl = window.location.href;
+            const shareText = '<%= book.name %> - KitApp';
+
+            // Paylaşım menüsünü göster
+            if (navigator.share) {
+                navigator.share({
+                    title: shareText,
+                    url: shareUrl
+                }).then(() => {
+                    // Paylaşım sayacını güncelle
+                    fetch('/api/share/<%= book.name %>', { method: 'POST' })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success) {
+                                document.getElementById('shareCount').textContent = data.count;
+                            }
+                        });
+                });
+            } else {
+                // Tarayıcı paylaşım API'sini desteklemiyorsa
+                const tempInput = document.createElement('input');
+                document.body.appendChild(tempInput);
+                tempInput.value = shareUrl;
+                tempInput.select();
+                document.execCommand('copy');
+                document.body.removeChild(tempInput);
+                alert('URL kopyalandı!');
+
+                // Paylaşım sayacını güncelle
+                fetch('/api/share/<%= book.name %>', { method: 'POST' })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            document.getElementById('shareCount').textContent = data.count;
+                        }
+                    });
+            }
+        }
+
+        // Dil menüsü
+        function toggleLangMenu() {
+            const menu = document.querySelector('.lang-menu');
+            menu.classList.toggle('show');
+        }
+
+        // Sayfa dışına tıklandığında dil menüsünü kapat
+        document.addEventListener('click', (e) => {
+            const langDropdown = document.querySelector('.lang-dropdown');
+            if (!langDropdown.contains(e.target)) {
+                document.querySelector('.lang-menu').classList.remove('show');
+            }
+        });
+
+        // Tema değiştirme
+        function toggleTheme() {
+            const body = document.body;
+            const theme = body.getAttribute('data-theme');
+            const themeIcon = document.querySelector('.theme-toggle i');
+            
+            if (theme === 'dark') {
+                body.removeAttribute('data-theme');
+                themeIcon.classList.remove('fa-sun');
+                themeIcon.classList.add('fa-moon');
+                localStorage.setItem('theme', 'light');
+            } else {
+                body.setAttribute('data-theme', 'dark');
+                themeIcon.classList.remove('fa-moon');
+                themeIcon.classList.add('fa-sun');
+                localStorage.setItem('theme', 'dark');
+            }
+        }
+
+        // Kaydedilen temayı yükle
+        document.addEventListener('DOMContentLoaded', () => {
+            const savedTheme = localStorage.getItem('theme');
+            const themeIcon = document.querySelector('.control-button i');
+            
+            if (savedTheme === 'dark') {
+                document.body.setAttribute('data-theme', 'dark');
+                themeIcon.classList.remove('fa-moon');
+                themeIcon.classList.add('fa-sun');
+            } else {
+                document.body.removeAttribute('data-theme');
+                themeIcon.classList.remove('fa-sun');
+                themeIcon.classList.add('fa-moon');
+            }
+        });
+
+        // Sayfa yüklendiğinde tema kontrolü
+        if (localStorage.getItem('theme') === 'dark') {
+            document.body.setAttribute('data-theme', 'dark');
+            const themeIcon = document.querySelector('.control-button i');
+            themeIcon.classList.remove('fa-moon');
+            themeIcon.classList.add('fa-sun');
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const audioPlayer = document.getElementById('audioPlayer');
+            if (!audioPlayer) return;
+
+            const playButton = document.querySelector('.play-button');
+            const playIcon = playButton.querySelector('i');
+            const progressBar = document.querySelector('.progress-bar');
+            const audioProgress = document.querySelector('.audio-progress');
+            const currentTime = document.querySelector('.current-time');
+            const totalTime = document.querySelector('.total-time');
+            const volumeButton = document.querySelector('.volume-button');
+            const volumeIcon = volumeButton.querySelector('i');
+            const volumeSlider = document.querySelector('.volume-slider');
+            const volumeLevel = document.querySelector('.volume-level');
+
+            // Play/Pause kontrolü
+            playButton.addEventListener('click', () => {
+                if (audioPlayer.paused) {
+                    audioPlayer.play();
+                    playIcon.classList.replace('fa-play', 'fa-pause');
+                } else {
+                    audioPlayer.pause();
+                    playIcon.classList.replace('fa-pause', 'fa-play');
+                }
+            });
+
+            // Ses kontrolü
+            volumeButton.addEventListener('click', () => {
+                if (audioPlayer.muted) {
+                    audioPlayer.muted = false;
+                    volumeIcon.classList.replace('fa-volume-mute', 'fa-volume-up');
+                    volumeLevel.style.width = (audioPlayer.volume * 100) + '%';
+                } else {
+                    audioPlayer.muted = true;
+                    volumeIcon.classList.replace('fa-volume-up', 'fa-volume-mute');
+                    volumeLevel.style.width = '0%';
+                }
+            });
+
+            // Ses seviyesi kontrolü
+            volumeSlider.addEventListener('click', (e) => {
+                const rect = volumeSlider.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const volume = x / rect.width;
+                audioPlayer.volume = Math.max(0, Math.min(1, volume));
+                volumeLevel.style.width = (volume * 100) + '%';
+                
+                if (volume === 0) {
+                    volumeIcon.classList.replace('fa-volume-up', 'fa-volume-mute');
+                } else {
+                    volumeIcon.classList.replace('fa-volume-mute', 'fa-volume-up');
+                }
+            });
+
+            // İlerleme çubuğu kontrolü
+            audioProgress.addEventListener('click', (e) => {
+                const rect = audioProgress.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const time = (x / rect.width) * audioPlayer.duration;
+                audioPlayer.currentTime = time;
+            });
+
+            // Zaman güncelleme
+            audioPlayer.addEventListener('timeupdate', () => {
+                const progress = (audioPlayer.currentTime / audioPlayer.duration) * 100;
+                progressBar.style.width = progress + '%';
+                currentTime.textContent = formatTime(audioPlayer.currentTime);
+            });
+
+            // Toplam süre
+            audioPlayer.addEventListener('loadedmetadata', () => {
+                totalTime.textContent = formatTime(audioPlayer.duration);
+            });
+
+            // Zaman formatı
+            function formatTime(seconds) {
+                const minutes = Math.floor(seconds / 60);
+                seconds = Math.floor(seconds % 60);
+                return `${minutes}:${seconds.toString().padStart(2, '0')}`;
+            }
+        });
+    </script>
+</body>
+</html> 

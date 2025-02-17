@@ -1,0 +1,44 @@
+Evet, bu siteyi hosting ve domain alarak çalıştırabilirsiniz. Size adım adım yapmanız gerekenleri anlatayım:
+Hosting Gereksinimleri:
+Node.js desteği olan bir hosting hizmeti gerekiyor
+En az 512MB RAM (ideal olarak 1GB)
+Dosya yükleme için yeterli disk alanı (kitaplar PDF olduğu için en az 5-10GB)
+2. Önerilen Hosting Seçenekleri:
+DigitalOcean (Droplet)
+Heroku
+Railway
+Render
+AWS Elastic Beanstalk
+Google Cloud Platform
+Yapmanız Gerekenler:
+package.json dosyanız hazır
+Tüm bağımlılıklar tanımlı
+Express sunucunuz çalışır durumda
+Sadece şu değişiklikleri yapmanız gerekecek:
+Dosya Yapısı:
+Önerilen Hosting: DigitalOcean
+En basit kurulum
+$5/ay'dan başlayan fiyatlar
+Node.js için hazır imajlar
+Kolay yönetim paneli
+Kurulum Adımları:
+DigitalOcean'da hesap açın
+Yeni bir Droplet oluşturun (Ubuntu + Node.js)
+SSH ile sunucuya bağlanın
+4. Git ile projenizi sunucuya çekin veya dosyaları FTP ile yükleyin
+npm install ile bağımlılıkları yükleyin
+pm2 veya forever ile uygulamayı başlatın:
+Domain Ayarları:
+Bir domain satın alın (örn: GoDaddy, Namecheap)
+DNS ayarlarını hosting IP'nize yönlendirin
+(Opsiyonel) Cloudflare ile SSL ve CDN ekleyin
+Güvenlik Önlemleri:
+.env dosyasını güvenli şekilde yapılandırın
+Dosya yükleme limitlerini ayarlayın
+Rate limiting ekleyin
+SSL sertifikası kurun (Let's Encrypt)
+Yedekleme:
+Kitap dosyaları için otomatik yedekleme
+Veritabanı yedeği (JSON dosyaları)
+Düzenli sistem yedeği
+Başlamak ister misiniz? Hangi hosting sağlayıcısını tercih edersiniz? Size detaylı kurulum adımlarını anlatabilirim.

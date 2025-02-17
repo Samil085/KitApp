@@ -1,0 +1,1401 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KitApp Admin Panel</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root {
+            --bg-color: #f8f9fa;
+            --text-color: #333;
+            --card-bg: white;
+            --navbar-bg: white;
+            --border-color: #dee2e6;
+            --hover-color: #f8f9fa;
+            --input-bg: white;
+            --input-text: #333;
+            --btn-primary-bg: #0d6efd;
+            --btn-primary-text: white;
+            --btn-secondary-bg: #6c757d;
+            --btn-secondary-text: white;
+            --table-header-bg: #f8f9fa;
+            --table-border: #dee2e6;
+            --modal-bg: white;
+            --chart-grid: #dee2e6;
+            --chart-text: #333;
+            --badge-bg: #6c757d;
+            --badge-text: white;
+            --nav-tab-active: white;
+            --nav-tab-hover: #f8f9fa;
+            --chart-bg: white;
+            --stat-card-1: #4e73df;
+            --stat-card-2: #1cc88a;
+            --stat-card-3: #36b9cc;
+            --stat-card-4: #f6c23e;
+        }
+
+        [data-theme="dark"] {
+            --bg-color: #121212;
+            --text-color: #ffffff;
+            --card-bg: #1e1e1e;
+            --border-color: #333333;
+            --hover-color: #2d2d2d;
+            --table-header-bg: #2d2d2d;
+            --table-border: #333333;
+            --chart-grid: #333333;
+            --chart-text: #ffffff;
+            --input-bg: #2d2d2d;
+            --input-text: #ffffff;
+            --btn-primary-bg: #0d6efd;
+            --btn-primary-text: white;
+            --btn-secondary-bg: #2d2d2d;
+            --btn-secondary-text: white;
+            --chart-bg: #1e1e1e;
+            --stat-card-1: #2e4687;
+            --stat-card-2: #127a52;
+            --stat-card-3: #1f6b78;
+            --stat-card-4: #9c7b24;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            min-height: 100vh;
+            transition: all 0.3s ease;
+        }
+        .navbar {
+            background-color: var(--navbar-bg) !important;
+            border-bottom: 1px solid var(--border-color);
+        }
+        .container {
+            max-width: 800px;
+        }
+        .admin-container {
+            background: var(--card-bg);
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+            margin-top: 2rem;
+            border: 1px solid var(--border-color);
+        }
+        .form-label {
+            font-weight: 500;
+        }
+        .preview-container {
+            width: 200px;
+            height: 280px;
+            border: 2px dashed #ddd;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1rem;
+            overflow: hidden;
+        }
+        .preview-container img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: cover;
+        }
+        .preview-container i {
+            font-size: 3rem;
+            color: #ddd;
+        }
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 25px;
+            border-radius: 5px;
+            color: white;
+            display: none;
+            z-index: 1000;
+        }
+        .notification.success {
+            background: #28a745;
+            display: block;
+        }
+        .notification.error {
+            background: #dc3545;
+            display: block;
+        }
+        .stats-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            transition: all 0.3s ease;
+        }
+        .stats-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        .stats-value {
+            font-size: 2rem;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+        .stats-label {
+            color: var(--text-color);
+            opacity: 0.8;
+            font-size: 1.1rem;
+        }
+        .stats-icon {
+            font-size: 2rem;
+            margin-bottom: 15px;
+            color: var(--text-color);
+            opacity: 0.8;
+        }
+        .nav-tabs {
+            border-bottom: 1px solid var(--border-color);
+            margin-bottom: 20px;
+        }
+        .nav-tabs .nav-link {
+            color: var(--text-color);
+            border: none;
+            padding: 10px 20px;
+            margin-right: 10px;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+        }
+        .nav-tabs .nav-link:hover {
+            background: var(--hover-color);
+        }
+        .nav-tabs .nav-link.active {
+            background: var(--text-color);
+            color: var(--bg-color);
+        }
+        .table {
+            color: var(--text-color) !important;
+        }
+        .table thead th {
+            background-color: var(--table-header-bg) !important;
+            border-color: var(--table-border) !important;
+            color: var(--text-color);
+        }
+        .table td, .table th {
+            border-color: var(--table-border) !important;
+            vertical-align: middle;
+        }
+        .chart-container {
+            background: var(--chart-bg);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--hover-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 10px;
+        }
+        .activity-item {
+            display: flex;
+            align-items: center;
+            padding: 15px;
+            border-bottom: 1px solid var(--border-color);
+        }
+        .activity-item:last-child {
+            border-bottom: none;
+        }
+        .activity-content {
+            flex-grow: 1;
+        }
+        .activity-time {
+            color: var(--text-color);
+            opacity: 0.7;
+            font-size: 0.9rem;
+        }
+        .card {
+            background-color: var(--card-bg) !important;
+            border-color: var(--border-color) !important;
+        }
+        .form-control {
+            background-color: var(--input-bg) !important;
+            color: var(--input-text) !important;
+            border-color: var(--border-color) !important;
+        }
+        .form-control:focus {
+            background-color: var(--input-bg) !important;
+            color: var(--input-text) !important;
+            border-color: var(--border-color) !important;
+        }
+        .modal-content {
+            background-color: var(--modal-bg) !important;
+            color: var(--text-color) !important;
+        }
+        .modal-header, .modal-footer {
+            border-color: var(--border-color) !important;
+        }
+        .badge {
+            background-color: var(--badge-bg) !important;
+            color: var(--badge-text) !important;
+        }
+        .btn-outline-secondary {
+            color: var(--text-color);
+            border-color: var(--border-color);
+        }
+        .btn-outline-secondary:hover {
+            background-color: var(--hover-color);
+            color: var(--text-color);
+            border-color: var(--border-color);
+        }
+        .nav-link {
+            color: var(--text-color);
+        }
+        .nav-link:hover {
+            color: var(--text-color);
+            opacity: 0.8;
+        }
+        .nav-link.active {
+            background-color: var(--hover-color) !important;
+            color: var(--text-color) !important;
+        }
+        select.form-control option {
+            background-color: var(--input-bg);
+            color: var(--input-text);
+        }
+        .close {
+            color: var(--text-color);
+        }
+        .chart-container canvas {
+            background-color: var(--card-bg);
+        }
+        .btn-close {
+            filter: var(--btn-close-bg, none);
+        }
+        .preview-container {
+            border-color: var(--preview-border, #ddd);
+        }
+        .preview-container i {
+            color: var(--preview-icon, #ddd);
+        }
+        .stats-card:hover {
+            background-color: var(--stats-hover);
+        }
+        .modal-content {
+            box-shadow: 0 0 20px var(--modal-shadow);
+        }
+        .table {
+            color: var(--text-color) !important;
+        }
+        .table tbody tr:hover {
+            background-color: var(--hover-color) !important;
+        }
+        .btn-outline-secondary {
+            color: var(--text-color) !important;
+            border-color: var(--border-color) !important;
+        }
+        .btn-outline-secondary:hover {
+            background-color: var(--hover-color) !important;
+            color: var(--text-color) !important;
+        }
+        .btn-outline-danger {
+            color: #dc3545 !important;
+        }
+        .btn-outline-danger:hover {
+            color: #ffffff !important;
+        }
+        .modal-header .btn-close {
+            background-color: var(--text-color);
+            opacity: 0.5;
+        }
+        .modal-header .btn-close:hover {
+            opacity: 1;
+        }
+        .btn-primary {
+            background-color: var(--btn-primary-bg) !important;
+            color: var(--btn-primary-text) !important;
+            border-color: var(--border-color) !important;
+        }
+        .btn-primary:hover {
+            background-color: var(--hover-color);
+            border-color: var(--btn-primary-border);
+            color: var(--btn-primary-text);
+        }
+        .btn-secondary {
+            background-color: var(--btn-secondary-bg) !important;
+            color: var(--btn-secondary-text) !important;
+            border-color: var(--border-color) !important;
+        }
+        .btn-secondary:hover {
+            background-color: var(--hover-color);
+            border-color: var(--btn-secondary-border);
+            color: var(--btn-secondary-text);
+        }
+        .nav-tabs .nav-link.active {
+            background-color: var(--nav-tab-active);
+            color: var(--text-color);
+            border-color: var(--border-color);
+        }
+        .nav-tabs .nav-link:hover:not(.active) {
+            background-color: var(--nav-tab-hover);
+            border-color: transparent;
+        }
+        .chart-container {
+            color: var(--chart-text);
+        }
+        .chart-container canvas {
+            background-color: var(--card-bg);
+        }
+        .table thead {
+            background-color: var(--table-header-bg);
+            color: var(--text-color);
+            border-color: var(--table-border);
+        }
+        .table tbody tr {
+            background-color: var(--card-bg);
+            color: var(--text-color);
+            border-color: var(--table-border);
+        }
+        .table tbody tr:hover {
+            background-color: var(--hover-color);
+        }
+        .badge.bg-secondary {
+            background-color: var(--badge-bg) !important;
+            color: var(--badge-text);
+        }
+        .badge.bg-success {
+            background-color: #198754 !important;
+        }
+        .btn-sm {
+            background-color: transparent;
+        }
+        .btn-outline-primary {
+            color: var(--text-color);
+            border-color: var(--border-color);
+        }
+        .btn-outline-primary:hover {
+            background-color: var(--hover-color);
+            color: var(--text-color);
+            border-color: var(--border-color);
+        }
+        .form-control:disabled {
+            background-color: var(--input-bg);
+            opacity: 0.7;
+        }
+        .modal-backdrop {
+            background-color: rgba(0, 0, 0, 0.7);
+        }
+        .modal-content {
+            background-color: var(--modal-bg) !important;
+            border-color: var(--border-color);
+        }
+        .modal-header {
+            border-bottom-color: var(--border-color);
+        }
+        .modal-footer {
+            border-top-color: var(--border-color);
+        }
+        .modal-title {
+            color: var(--text-color);
+        }
+        .form-control, .form-select {
+            background-color: var(--input-bg) !important;
+            color: var(--input-text) !important;
+        }
+        .form-control:focus, .form-select:focus {
+            background-color: var(--input-bg) !important;
+            color: var(--input-text) !important;
+        }
+        .form-select option {
+            background-color: var(--input-bg) !important;
+            color: var(--input-text) !important;
+        }
+        .preview-container {
+            background-color: var(--card-bg);
+            border-color: var(--preview-border);
+        }
+        .preview-icon {
+            color: var(--preview-icon);
+        }
+        .stats-card {
+            background-color: var(--card-bg);
+            border-color: var(--border-color);
+        }
+        .stats-card:hover {
+            background-color: var(--stats-hover);
+        }
+        .btn-close {
+            filter: invert(1) grayscale(100%) brightness(200%);
+        }
+        .dropdown-menu {
+            background-color: var(--card-bg);
+            border-color: var(--border-color);
+        }
+        .dropdown-item {
+            color: var(--text-color);
+        }
+        .dropdown-item:hover {
+            background-color: var(--hover-color);
+            color: var(--text-color);
+        }
+        .table {
+            border-color: var(--border-color);
+        }
+        .table td, .table th {
+            border-color: var(--border-color);
+            color: var(--text-color);
+        }
+        .pagination .page-link {
+            background-color: var(--card-bg);
+            border-color: var(--border-color);
+            color: var(--text-color);
+        }
+        .pagination .page-link:hover {
+            background-color: var(--hover-color);
+            border-color: var(--border-color);
+            color: var(--text-color);
+        }
+        .pagination .page-item.active .page-link {
+            background-color: var(--text-color);
+            border-color: var(--text-color);
+            color: var(--bg-color);
+        }
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+
+            .card {
+                margin-bottom: 15px;
+            }
+
+            .table-responsive {
+                overflow-x: auto;
+            }
+
+            .btn {
+                padding: 8px 12px;
+                font-size: 14px;
+                margin: 5px;
+                white-space: nowrap;
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+            }
+
+            .btn i {
+                margin-right: 5px;
+                font-size: 16px;
+            }
+
+            .stats-card {
+                margin-bottom: 15px;
+            }
+
+            .modal-dialog {
+                margin: 10px;
+            }
+
+            .form-group {
+                margin-bottom: 15px;
+            }
+
+            .table td, .table th {
+                padding: 8px;
+                font-size: 14px;
+            }
+
+            .action-buttons {
+                display: flex;
+                gap: 5px;
+                flex-wrap: wrap;
+            }
+
+            .action-buttons .btn {
+                flex: 1;
+                min-width: 80px;
+            }
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+            padding: 8px 15px;
+            font-size: 14px;
+            font-weight: 500;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+        }
+
+        .btn i {
+            font-size: 16px;
+        }
+
+        .btn-add {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            background-color: var(--btn-primary-bg);
+            color: var(--btn-primary-text);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            z-index: 1000;
+        }
+
+        .btn-add i {
+            font-size: 24px;
+            margin: 0;
+        }
+
+        @media (min-width: 769px) {
+            .btn-add {
+                position: static;
+                width: auto;
+                height: auto;
+                border-radius: 5px;
+                margin-bottom: 20px;
+            }
+
+            .btn-add i {
+                font-size: 16px;
+                margin-right: 5px;
+            }
+        }
+
+        .stat-card {
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            color: white;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+            min-height: 140px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .stat-card.books {
+            background: var(--stat-card-1);
+        }
+
+        .stat-card.users {
+            background: var(--stat-card-2);
+        }
+
+        .stat-card.downloads {
+            background: var(--stat-card-3);
+        }
+
+        .stat-card.shares {
+            background: var(--stat-card-4);
+        }
+
+        .stat-card .title {
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            opacity: 0.8;
+        }
+
+        .stat-card .value {
+            font-size: 2rem;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+
+        .stat-card .icon {
+            font-size: 2rem;
+            opacity: 0.8;
+        }
+
+        .chart-title {
+            color: var(--text-color);
+            font-size: 1.2rem;
+            margin-bottom: 20px;
+            font-weight: 500;
+        }
+
+        canvas {
+            width: 100% !important;
+            height: 300px !important;
+        }
+    </style>
+    <script>
+        // Grafik renk ayarları
+        function updateChartDefaults() {
+            if (typeof Chart !== 'undefined') {
+                Chart.defaults.color = getComputedStyle(document.documentElement).getPropertyValue('--chart-text').trim();
+                Chart.defaults.borderColor = getComputedStyle(document.documentElement).getPropertyValue('--chart-grid-color').trim();
+            }
+        }
+        document.addEventListener('DOMContentLoaded', updateChartDefaults);
+    </script>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-light">
+        <div class="container">
+            <a class="navbar-brand" href="/">
+                <i class="fas fa-book-reader me-2"></i>
+                KitApp Admin
+            </a>
+            <div class="d-flex">
+                <a href="/admin/logout" class="btn btn-outline-danger">
+                    <i class="fas fa-sign-out-alt me-2"></i>
+                    Çıxış
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <ul class="nav nav-tabs" id="adminTabs" role="tablist">
+            <li class="nav-item">
+                <a class="nav-link active" id="dashboard-tab" data-bs-toggle="tab" href="#dashboard" role="tab">
+                    <i class="fas fa-chart-line me-2"></i><%= translations.dashboard %>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" id="books-tab" data-bs-toggle="tab" href="#books" role="tab">
+                    <i class="fas fa-book me-2"></i><%= translations.books %>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" id="users-tab" data-bs-toggle="tab" href="#users" role="tab">
+                    <i class="fas fa-users me-2"></i><%= translations.users %>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" id="activity-tab" data-bs-toggle="tab" href="#activity" role="tab">
+                    <i class="fas fa-history me-2"></i><%= translations.activity %>
+                </a>
+            </li>
+        </ul>
+
+        <div class="tab-content" id="adminTabContent">
+            <!-- Dashboard Tab -->
+            <div class="tab-pane fade show active" id="dashboard" role="tabpanel">
+                <div class="row">
+                    <div class="col-xl-3 col-md-6">
+                        <div class="stat-card books">
+                            <div>
+                                <div class="title"><%= translations.total_books %></div>
+                                <div class="value"><%= totalBooks %></div>
+                            </div>
+                            <div class="icon">
+                                <i class="fas fa-book"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xl-3 col-md-6">
+                        <div class="stat-card users">
+                            <div>
+                                <div class="title"><%= translations.total_users %></div>
+                                <div class="value"><%= totalUsers %></div>
+                            </div>
+                            <div class="icon">
+                                <i class="fas fa-users"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xl-3 col-md-6">
+                        <div class="stat-card downloads">
+                            <div>
+                                <div class="title"><%= translations.total_downloads %></div>
+                                <div class="value"><%= totalDownloads %></div>
+                            </div>
+                            <div class="icon">
+                                <i class="fas fa-download"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xl-3 col-md-6">
+                        <div class="stat-card shares">
+                            <div>
+                                <div class="title"><%= translations.total_shares %></div>
+                                <div class="value"><%= totalShares %></div>
+                            </div>
+                            <div class="icon">
+                                <i class="fas fa-share-alt"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-12">
+                        <div class="chart-container">
+                            <h5 class="chart-title"><%= translations.last_7_days %></h5>
+                            <canvas id="activityChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Books Tab -->
+            <div class="tab-pane fade" id="books" role="tabpanel">
+                <div class="admin-container">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h4><%= translations.book_list %></h4>
+                        <button class="btn btn-add" data-bs-toggle="modal" data-bs-target="#addBookModal">
+                            <i class="fas fa-plus"></i>
+                            <span class="d-none d-md-inline">Yeni Kitap</span>
+                        </button>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th><%= translations.book_name %></th>
+                                    <th><%= translations.author %></th>
+                                    <th><%= translations.category %></th>
+                                    <th><%= translations.download %></th>
+                                    <th><%= translations.added %></th>
+                                    <th><%= translations.actions %></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <% books.forEach(book => { %>
+                                    <tr data-book-name="<%= book.name %>" 
+                                        data-author="<%= book.author %>"
+                                        data-categories="<%= JSON.stringify(book.categories) %>"
+                                        data-page-count="<%= book.pageCount %>"
+                                        data-publish-year="<%= book.publishYear %>"
+                                        data-cover="<%= book.name %>.jpg">
+                                        <td><%= book.name %></td>
+                                        <td><%= book.author %></td>
+                                        <td>
+                                            <% if (book.categories && book.categories.length > 0) { %>
+                                                <% book.categories.forEach(cat => { %>
+                                                    <span class="badge bg-secondary"><%= cat %></span>
+                                                <% }); %>
+                                            <% } %>
+                                        </td>
+                                        <td><%= book.downloadCount %></td>
+                                        <td><%= new Date(book.addedAt).toLocaleDateString() %></td>
+                                        <td>
+                                            <button class="btn btn-sm btn-outline-primary me-2" onclick="editBook('<%= book.name %>')">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                            <button class="btn btn-sm btn-outline-danger" onclick="deleteBook('<%= book.name %>')">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                <% }); %>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Users Tab -->
+            <div class="tab-pane fade" id="users" role="tabpanel">
+                <div class="admin-container">
+                    <h4 class="mb-4"><%= translations.user_statistics %></h4>
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th><%= translations.user %></th>
+                                    <th><%= translations.download %></th>
+                                    <th><%= translations.last_activity %></th>
+                                    <th><%= translations.status %></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <% users.forEach(user => { %>
+                                    <tr>
+                                        <td>
+                                            <div class="d-flex align-items-center">
+                                                <div class="user-avatar">
+                                                    <i class="fas fa-user"></i>
+                                                </div>
+                                                <%= user.name %>
+                                            </div>
+                                        </td>
+                                        <td><%= user.downloads %></td>
+                                        <td><%= new Date(user.lastActivity).toLocaleDateString() %></td>
+                                        <td>
+                                            <span class="badge bg-success">Aktiv</span>
+                                        </td>
+                                    </tr>
+                                <% }); %>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Activity Tab -->
+            <div class="tab-pane fade" id="activity" role="tabpanel">
+                <div class="admin-container">
+                    <h4 class="mb-4"><%= translations.recent_activities %></h4>
+                    <div class="activity-list">
+                        <% activities.forEach(activity => { %>
+                            <div class="activity-item">
+                                <div class="user-avatar">
+                                    <% if (activity.userId === 'user') { %>
+                                        <i class="fas fa-user text-primary"></i>
+                                    <% } else { %>
+                                        <i class="fas fa-user-shield text-warning"></i>
+                                    <% } %>
+                                </div>
+                                <div class="activity-content">
+                                    <div class="d-flex justify-content-between align-items-start">
+                                        <div>
+                                            <strong><%= activity.userName %></strong>
+                                            <%= activity.action %>
+                                            <% if (activity.details) { %>
+                                                <% if (activity.details.bookName) { %>
+                                                    <strong><%= activity.details.bookName %></strong>
+                                                    <% if (activity.details.author) { %>
+                                                        (<%= activity.details.author %>)
+                                                    <% } %>
+                                                <% } %>
+                                            <% } %>
+                                        </div>
+                                        <span class="activity-time">
+                                            <%= new Date(activity.time).toLocaleString('az-AZ', {
+                                                year: 'numeric',
+                                                month: 'long',
+                                                day: 'numeric',
+                                                hour: '2-digit',
+                                                minute: '2-digit'
+                                            }) %>
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        <% }); %>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="notification" id="notification"></div>
+
+    <!-- Kitap Ekleme Modalı -->
+    <div class="modal fade" id="addBookModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Yeni Kitap Ekle</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="addBookForm" enctype="multipart/form-data">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group mb-3">
+                                    <label class="form-label">Kitap Adı</label>
+                                    <input type="text" class="form-control" name="bookName" required>
+                                </div>
+                                <div class="form-group mb-3">
+                                    <label class="form-label">Yazar</label>
+                                    <input type="text" class="form-control" name="author">
+                                </div>
+                                <div class="form-group mb-3">
+                                    <label class="form-label">Kategoriler</label>
+                                    <select class="form-control" name="categories" multiple>
+                                        <% categories.forEach(category => { %>
+                                            <option value="<%= category.id %>">
+                                                <%= category[`name_${currentLang}`] %>
+                                            </option>
+                                        <% }); %>
+                                    </select>
+                                </div>
+                                <div class="form-group mb-3">
+                                    <label class="form-label">Sayfa Sayısı</label>
+                                    <input type="number" class="form-control" name="pageCount">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group mb-3">
+                                    <label class="form-label">Yayın Yılı</label>
+                                    <input type="number" class="form-control" name="publishYear">
+                                </div>
+                                <div class="form-group mb-3">
+                                    <label class="form-label">Dil</label>
+                                    <select class="form-control" name="language">
+                                        <option value="az">Azerbaycan Türkçesi</option>
+                                        <option value="tr">Türkçe</option>
+                                    </select>
+                                </div>
+                                <div class="form-group mb-3">
+                                    <label class="form-label">ISBN</label>
+                                    <input type="text" class="form-control" name="isbn">
+                                </div>
+                                <div class="form-group mb-3">
+                                    <label class="form-label">Yayınevi</label>
+                                    <input type="text" class="form-control" name="publisher">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group mb-3">
+                            <label class="form-label">Açıklama</label>
+                            <textarea class="form-control" name="description" rows="3"></textarea>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group mb-3">
+                                    <label class="form-label">PDF Dosyası</label>
+                                    <input type="file" class="form-control" name="pdfFile" accept=".pdf" required>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group mb-3">
+                                    <label class="form-label">Kapak Resmi</label>
+                                    <input type="file" class="form-control" name="coverImage" accept="image/*">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group mb-3">
+                            <label class="form-label">Ses Dosyası</label>
+                            <input type="file" class="form-control" name="audio" accept="audio/mp3">
+                            <div class="form-text">MP3 formatında ses dosyası yükleyebilirsiniz</div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">İptal</button>
+                    <button type="button" class="btn btn-primary" onclick="submitNewBook()">Kaydet</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Kitap Silme Onay Modalı -->
+    <div class="modal fade" id="deleteBookModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title"><%= translations.confirm_delete %></h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <p><%= translations.confirm_delete_message %></p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><%= translations.no %></button>
+                    <button type="button" class="btn btn-danger" id="confirmDelete"><%= translations.yes %></button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Kitap Düzenleme Modalı -->
+    <div class="modal fade" id="editBookModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Kitabı Düzənlə</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="editBookForm">
+                        <input type="hidden" name="originalName">
+                        <div class="row">
+                            <div class="col-md-8">
+                                <div class="mb-3">
+                                    <label class="form-label">Kitab Adı</label>
+                                    <input type="text" class="form-control" name="name" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Müəllif</label>
+                                    <input type="text" class="form-control" name="author" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Kateqoriyalar</label>
+                                    <select class="form-control" name="categories" multiple required>
+                                        <% categories.forEach(category => { %>
+                                            <option value="<%= category.id %>"><%= category[`name_${currentLang}`] %></option>
+                                        <% }); %>
+                                    </select>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label class="form-label">Səhifə sayı</label>
+                                            <input type="number" class="form-control" name="pageCount">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label class="form-label">Nəşr ili</label>
+                                            <input type="number" class="form-control" name="publishYear">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Dil</label>
+                                    <select class="form-control" name="language">
+                                        <option value="az">Azərbaycan dili</option>
+                                        <option value="tr">Türk dili</option>
+                                    </select>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Təsvir</label>
+                                    <textarea class="form-control" name="description" rows="3"></textarea>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label class="form-label">ISBN</label>
+                                            <input type="text" class="form-control" name="isbn">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label class="form-label">Nəşriyyat</label>
+                                            <input type="text" class="form-control" name="publisher">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label class="form-label">PDF Fayl</label>
+                                    <input type="file" class="form-control" name="pdf" accept=".pdf">
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Üz qabığı</label>
+                                    <input type="file" class="form-control" name="cover" accept="image/*" id="editCoverInput">
+                                    <div class="preview-container mt-2" id="editPreviewContainer">
+                                        <i class="fas fa-image"></i>
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Səs Faylı</label>
+                                    <input type="file" class="form-control" name="audio" accept="audio/mp3">
+                                    <div id="currentAudio" class="mt-2" style="display: none;">
+                                        <audio controls style="width: 100%;">
+                                            <source src="" type="audio/mpeg">
+                                        </audio>
+                                    </div>
+                                    <button type="button" class="btn btn-danger mt-2" id="deleteAudioBtn" style="display: none;">
+                                        <i class="fas fa-trash"></i> Səs Faylını Sil
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Ləğv Et</button>
+                    <button type="button" class="btn btn-primary" onclick="updateBook()">Yadda Saxla</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        // Aktivite grafiği
+        const ctx = document.getElementById('activityChart').getContext('2d');
+        const activityChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: JSON.parse('<%- activityDates %>'),
+                datasets: [
+                    {
+                        label: 'Yükləmələr',
+                        data: JSON.parse('<%- downloadData %>'),
+                        borderColor: '#4e73df',
+                        backgroundColor: 'rgba(78, 115, 223, 0.2)',
+                        borderWidth: 3,
+                        pointRadius: 5,
+                        pointBackgroundColor: '#4e73df',
+                        pointBorderColor: '#ffffff',
+                        pointHoverRadius: 8,
+                        pointHoverBackgroundColor: '#4e73df',
+                        pointHoverBorderColor: '#ffffff',
+                        tension: 0.3,
+                        fill: true
+                    },
+                    {
+                        label: 'Paylaşımlar',
+                        data: JSON.parse('<%- shareData %>'),
+                        borderColor: '#f6c23e',
+                        backgroundColor: 'rgba(246, 194, 62, 0.2)',
+                        borderWidth: 3,
+                        pointRadius: 5,
+                        pointBackgroundColor: '#f6c23e',
+                        pointBorderColor: '#ffffff',
+                        pointHoverRadius: 8,
+                        pointHoverBackgroundColor: '#f6c23e',
+                        pointHoverBorderColor: '#ffffff',
+                        tension: 0.3,
+                        fill: true
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'top',
+                        labels: {
+                            font: {
+                                size: 14,
+                                weight: 'bold'
+                            },
+                            padding: 20,
+                            usePointStyle: true,
+                            pointStyle: 'circle'
+                        }
+                    },
+                    tooltip: {
+                        mode: 'index',
+                        intersect: false,
+                        backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                        titleFont: {
+                            size: 16,
+                            weight: 'bold'
+                        },
+                        bodyFont: {
+                            size: 14
+                        },
+                        padding: 15,
+                        displayColors: true,
+                        borderColor: 'rgba(255, 255, 255, 0.2)',
+                        borderWidth: 1
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        grid: {
+                            color: 'rgba(0, 0, 0, 0.1)',
+                            drawBorder: false
+                        },
+                        ticks: {
+                            font: {
+                                size: 12,
+                                weight: 'bold'
+                            },
+                            padding: 10,
+                            stepSize: 1
+                        }
+                    },
+                    x: {
+                        grid: {
+                            display: false
+                        },
+                        ticks: {
+                            font: {
+                                size: 12,
+                                weight: 'bold'
+                            },
+                            padding: 10
+                        }
+                    }
+                },
+                interaction: {
+                    mode: 'nearest',
+                    axis: 'x',
+                    intersect: false
+                },
+                elements: {
+                    line: {
+                        tension: 0.3
+                    }
+                }
+            }
+        });
+
+        // Resim önizleme
+        const coverInput = document.getElementById('coverInput');
+        const previewContainer = document.getElementById('previewContainer');
+
+        coverInput.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    previewContainer.innerHTML = `<img src="${e.target.result}" alt="Kapak önizleme">`;
+                }
+                reader.readAsDataURL(file);
+            } else {
+                previewContainer.innerHTML = '<i class="fas fa-image"></i>';
+            }
+        });
+
+        // Kapak resmi önizleme - Düzenleme modalı için
+        const editCoverInput = document.getElementById('editCoverInput');
+        const editPreviewContainer = document.getElementById('editPreviewContainer');
+
+        editCoverInput.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    editPreviewContainer.innerHTML = `<img src="${e.target.result}" alt="Kapak önizleme">`;
+                }
+                reader.readAsDataURL(file);
+            } else {
+                editPreviewContainer.innerHTML = '<i class="fas fa-image"></i>';
+            }
+        });
+
+        // Kitap silme işlemi
+        let bookToDelete = null;
+        
+        function deleteBook(bookName) {
+            if (confirm('Kitabı silmək istədiyinizə əminsiniz?')) {
+                fetch(`/admin/delete-book/${bookName}`, {
+                    method: 'DELETE'
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        const row = document.querySelector(`tr[data-book-name="${bookName}"]`);
+                        if (row) {
+                            row.remove();
+                        }
+                        showNotification('success', 'Kitab uğurla silindi');
+                    } else {
+                        showNotification('error', data.message || 'Kitab silinərkən xəta baş verdi');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    showNotification('error', 'Kitab silinərkən xəta baş verdi');
+                });
+            }
+        }
+
+        // Kitap düzenleme işlemi
+        function editBook(bookName) {
+            fetch(`/admin/get-book/${bookName}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        const book = data.book;
+                        const form = document.getElementById('editBookForm');
+                        
+                        // Form alanlarını doldur
+                        form.querySelector('input[name="originalName"]').value = book.name;
+                        form.querySelector('input[name="name"]').value = book.name;
+                        form.querySelector('input[name="author"]').value = book.author || '';
+                        form.querySelector('input[name="pageCount"]').value = book.pageCount || '';
+                        form.querySelector('input[name="publishYear"]').value = book.publishYear || '';
+                        form.querySelector('select[name="language"]').value = book.language || 'az';
+                        form.querySelector('textarea[name="description"]').value = book.description || '';
+                        form.querySelector('input[name="isbn"]').value = book.isbn || '';
+                        form.querySelector('input[name="publisher"]').value = book.publisher || '';
+
+                        // Kategorileri seç
+                        const categorySelect = form.querySelector('select[name="categories"]');
+                        if (book.categories) {
+                            Array.from(categorySelect.options).forEach(option => {
+                                option.selected = book.categories.includes(option.value);
+                            });
+                        }
+
+                        // Kapak resmini göster
+                        const previewContainer = document.getElementById('editPreviewContainer');
+                        previewContainer.innerHTML = `<img src="/covers/${book.name}.jpg?t=${Date.now()}" alt="Kapak önizleme">`;
+
+                        // Ses dosyası kontrolü
+                        const audioPlayer = document.getElementById('currentAudio');
+                        const deleteAudioBtn = document.getElementById('deleteAudioBtn');
+                        
+                        if (book.hasAudio) {
+                            audioPlayer.style.display = 'block';
+                            deleteAudioBtn.style.display = 'block';
+                            const audioElement = audioPlayer.querySelector('audio');
+                            audioElement.querySelector('source').src = `/audio/${book.name}.mp3?t=${Date.now()}`;
+                            audioElement.load();
+                        } else {
+                            audioPlayer.style.display = 'none';
+                            deleteAudioBtn.style.display = 'none';
+                        }
+
+                        // Düzenleme modalını göster
+                        const editModal = new bootstrap.Modal(document.getElementById('editBookModal'));
+                        editModal.show();
+                    } else {
+                        showNotification('error', data.message || 'Kitab məlumatları alınarkən xəta baş verdi');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    showNotification('error', 'Kitab məlumatları alınarkən xəta baş verdi');
+                });
+        }
+
+        // Kitap ekleme formu
+        function submitNewBook() {
+            const form = document.getElementById('addBookForm');
+            const formData = new FormData(form);
+
+            fetch('/admin/add-book', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('Kitap başarıyla eklendi!');
+                    location.reload();
+                } else {
+                    alert('Hata: ' + data.error);
+                }
+            })
+            .catch(error => {
+                console.error('Hata:', error);
+                alert('Bir hata oluştu!');
+            });
+        }
+
+        // Kitap güncelleme
+        async function updateBook() {
+            const form = document.getElementById('editBookForm');
+            const formData = new FormData(form);
+            
+            try {
+                const response = await fetch('/admin/edit-book', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const data = await response.json();
+                if (data.success) {
+                    showNotification('success', 'Kitab uğurla yeniləndi');
+                    location.reload();
+                } else {
+                    showNotification('error', data.message || 'Kitab yenilənərkən xəta baş verdi');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                showNotification('error', 'Kitab yenilənərkən xəta baş verdi');
+            }
+        }
+
+        // Bildirim gösterme fonksiyonu
+        function showNotification(type, message) {
+            const notification = document.getElementById('notification');
+            notification.textContent = message;
+            notification.className = `notification ${type}`;
+            notification.style.display = 'block';
+            
+            setTimeout(() => {
+                notification.style.display = 'none';
+            }, 3000);
+        }
+    </script>
+</body>
+</html> 

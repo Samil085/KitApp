@@ -1,0 +1,46 @@
+{
+    "categories": [
+        {
+            "id": "roman",
+            "name": "Roman",
+            "name_en": "Bədii ədəbiyyat",
+            "name_az": "Bədii ədəbiyyat",
+            "name_tr": "Bedii Edebiyat"
+        },
+        {
+            "id": "felsefe",
+            "name": "Felsefe",
+            "name_en": "Philosophy",
+            "name_az": "Fəlsəfə",
+            "name_tr": "Felsefe"
+        },
+        {
+            "id": "bilim",
+            "name": "Bilim",
+            "name_en": "Science",
+            "name_az": "Elm",
+            "name_tr": "Bilim"
+        },
+        {
+            "id": "tarih",
+            "name": "Tarih",
+            "name_en": "History",
+            "name_az": "Tarix",
+            "name_tr": "Tarih"
+        },
+        {
+            "id": "psikoloji",
+            "name": "Psikoloji",
+            "name_en": "Psychology",
+            "name_az": "Psixologiya",
+            "name_tr": "Psikoloji"
+        },
+        {
+            "id": "egitim",
+            "name": "Eğitim",
+            "name_en": "Education",
+            "name_az": "Təhsil",
+            "name_tr": "Eğitim"
+        }
+    ]
+} 
