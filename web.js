@@ -1100,6 +1100,5 @@ app.get('/admin/users', requireAuth, (req, res) => {
     }
 });
 
-app.listen(port, '0.0.0.0', () => {
-    console.log(`Web sunucusu http://0.0.0.0:${port} adresinde çalışıyor`);
-}); 
+// Export app instead of listening
+module.exports = app; 
